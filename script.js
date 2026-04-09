@@ -1,6 +1,7 @@
 const endpoints = {
   dog: "https://dog.ceo/api/breeds/image/random",
-  joke: [
+  jokeApi: "https://v2.jokeapi.dev/joke/Programming?safe-mode",
+  officialJokes: [
     "https://official-joke-api.appspot.com/random_joke",
     "https://official-joke-api.appspot.com/jokes/random",
     "https://official-joke-api.appspot.com/jokes/programming/random",
@@ -138,6 +139,37 @@ function getRandomFallbackJoke() {
   return fallbackJokes[randomIndex];
 }
 
+function normalizeJokeData(rawData) {
+  const data = Array.isArray(rawData) ? rawData[0] : rawData;
+
+  if (!data) {
+    throw new Error("Invalid joke data");
+  }
+
+  if (data.setup && data.punchline) {
+    return {
+      setup: data.setup,
+      punchline: data.punchline,
+    };
+  }
+
+  if (data.type === "twopart" && data.setup && data.delivery) {
+    return {
+      setup: data.setup,
+      punchline: data.delivery,
+    };
+  }
+
+  if (data.type === "single" && data.joke) {
+    return {
+      setup: "Random Joke",
+      punchline: data.joke,
+    };
+  }
+
+  throw new Error("Invalid joke data");
+}
+
 // Converts "australian-shepherd" into "Australian Shepherd".
 function formatBreedName(imageUrl) {
   const match = imageUrl.match(/breeds\/([^/]+)/);
@@ -200,6 +232,7 @@ async function copyDogImageUrl() {
 
 async function loadJoke() {
   const { button, nextButton, status, panel, setup, punchline } = elements.joke;
+  let statusMessage = "";
 
   button.disabled = true;
   nextButton.disabled = true;
@@ -207,18 +240,22 @@ async function loadJoke() {
   setStatus(status, "Loading...");
 
   try {
-    const rawData = await fetchFromFallbacks(endpoints.joke);
-    const data = Array.isArray(rawData) ? rawData[0] : rawData;
+    let jokeData;
 
-    if (!data || !data.setup || !data.punchline) {
-      throw new Error("Invalid joke data");
+    try {
+      const jokeApiJoke = await fetchJson(endpoints.jokeApi);
+      jokeData = normalizeJokeData(jokeApiJoke);
+    } catch (jokeApiError) {
+      const officialJoke = await fetchFromFallbacks(endpoints.officialJokes);
+      jokeData = normalizeJokeData(officialJoke);
+      statusMessage = "Primary joke API unavailable. Loaded from backup source.";
     }
 
-    setup.textContent = data.setup;
-    punchline.textContent = data.punchline;
+    setup.textContent = jokeData.setup;
+    punchline.textContent = jokeData.punchline;
 
     showPanel(panel, true);
-    setStatus(status, "");
+    setStatus(status, statusMessage);
     nextButton.disabled = false;
   } catch (error) {
     const fallbackJoke = getRandomFallbackJoke();

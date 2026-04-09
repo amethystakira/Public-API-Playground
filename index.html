@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Public API Playground</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;700&family=DM+Sans:wght@400;500;700&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body>
+    <div class="page-shell">
+      <header class="hero">
+        <p class="eyebrow">Vanilla JS + Public APIs</p>
+        <h1>Public API Playground</h1>
+        <p class="hero-copy">
+          Explore beginner-friendly API examples with live data, clean UI, and
+          simple interactions you can open directly in the browser.
+        </p>
+      </header>
+
+      <main class="card-grid">
+        <section class="card" aria-labelledby="dog-heading">
+          <div class="card-heading">
+            <h2 id="dog-heading">Dog Finder</h2>
+            <span class="card-badge">Dog CEO</span>
+          </div>
+          <p class="card-copy">
+            Fetch a random dog image and automatically detect its breed from the
+            image URL.
+          </p>
+          <div class="button-row">
+            <button id="dog-btn" class="button">Get Dog</button>
+            <button id="copy-dog-btn" class="button button-secondary" disabled>
+              Copy Image URL
+            </button>
+          </div>
+          <div id="dog-status" class="status" aria-live="polite"></div>
+          <div id="dog-result" class="result-panel" hidden>
+            <img id="dog-image" class="dog-image" alt="Random dog" />
+            <div class="info-list">
+              <p><strong>Breed:</strong> <span id="dog-breed">-</span></p>
+              <p>
+                <strong>Image URL:</strong>
+                <a
+                  id="dog-url"
+                  href="#"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                ></a>
+              </p>
+            </div>
+          </div>
+        </section>
+
+        <section class="card" aria-labelledby="joke-heading">
+          <div class="card-heading">
+            <h2 id="joke-heading">Joke Generator</h2>
+            <span class="card-badge">Official Joke API</span>
+          </div>
+          <p class="card-copy">
+            Grab a random joke and load another one instantly with the next
+            action.
+          </p>
+          <div class="button-row">
+            <button id="joke-btn" class="button">Get Joke</button>
+            <button id="next-joke-btn" class="button button-secondary" disabled>
+              Next Joke
+            </button>
+          </div>
+          <div id="joke-status" class="status" aria-live="polite"></div>
+          <div id="joke-result" class="result-panel">
+            <p class="content-label">Setup</p>
+            <p id="joke-setup" class="content-text">No joke loaded yet.</p>
+            <p class="content-label">Punchline</p>
+            <p id="joke-punchline" class="content-text accent-text">-</p>
+          </div>
+        </section>
+
+        <section class="card" aria-labelledby="user-heading">
+          <div class="card-heading">
+            <h2 id="user-heading">Random User Profile</h2>
+            <span class="card-badge">Random User</span>
+          </div>
+          <p class="card-copy">
+            See a generated profile with location and account details from a
+            public API.
+          </p>
+          <div class="button-row">
+            <button id="user-btn" class="button">Get User</button>
+          </div>
+          <div id="user-status" class="status" aria-live="polite"></div>
+          <div id="user-result" class="result-panel user-panel">
+            <img
+              id="user-image"
+              class="avatar"
+              alt="Profile placeholder"
+              src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 120 120'%3E%3Cdefs%3E%3ClinearGradient id='g' x1='0%25' y1='0%25' x2='100%25' y2='100%25'%3E%3Cstop offset='0%25' stop-color='%23e8f6f0'/%3E%3Cstop offset='100%25' stop-color='%23c7e9db'/%3E%3C/linearGradient%3E%3C/defs%3E%3Crect width='120' height='120' rx='28' fill='url(%23g)'/%3E%3Ccircle cx='60' cy='42' r='20' fill='%230f8b6d' opacity='0.88'/%3E%3Cpath d='M28 95c4-17 18-28 32-28s28 11 32 28' fill='%230f8b6d' opacity='0.88'/%3E%3C/svg%3E"
+            />
+            <div class="info-list">
+              <p><strong>Name:</strong> <span id="user-name">Waiting for data</span></p>
+              <p><strong>Email:</strong> <span id="user-email">-</span></p>
+              <p><strong>Country:</strong> <span id="user-country">-</span></p>
+              <p><strong>Age:</strong> <span id="user-age">-</span></p>
+            </div>
+          </div>
+        </section>
+
+        <section class="card posts-card" aria-labelledby="posts-heading">
+          <div class="card-heading">
+            <h2 id="posts-heading">Posts Viewer</h2>
+            <span class="card-badge">JSONPlaceholder</span>
+          </div>
+          <p class="card-copy">
+            Load the first five demo posts and preview titles with their body
+            text.
+          </p>
+          <div class="button-row">
+            <button id="posts-btn" class="button">Load Posts</button>
+          </div>
+          <div id="posts-status" class="status" aria-live="polite"></div>
+          <div id="posts-result" class="result-panel">
+            <div id="posts-list" class="posts-list"></div>
+          </div>
+        </section>
+      </main>
+    </div>
+
+    <script src="script.js"></script>
+  </body>
+</html>

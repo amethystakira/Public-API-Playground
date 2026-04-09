@@ -1,9 +1,36 @@
 const endpoints = {
   dog: "https://dog.ceo/api/breeds/image/random",
-  joke: "https://official-joke-api.appspot.com/random_joke",
+  joke: [
+    "https://official-joke-api.appspot.com/random_joke",
+    "https://official-joke-api.appspot.com/jokes/random",
+    "https://official-joke-api.appspot.com/jokes/programming/random",
+  ],
   user: "https://randomuser.me/api/",
   posts: "https://jsonplaceholder.typicode.com/posts",
 };
+
+const fallbackJokes = [
+  {
+    setup: "Why do JavaScript developers wear glasses?",
+    punchline: "Because they do not C#.",
+  },
+  {
+    setup: "Why did the developer go broke?",
+    punchline: "Because they used up all their cache.",
+  },
+  {
+    setup: "What did the HTML file say to the CSS file?",
+    punchline: "You make me look good.",
+  },
+  {
+    setup: "Why was the function feeling calm?",
+    punchline: "Because it had finally found its inner scope.",
+  },
+  {
+    setup: "Why did the bug stay home?",
+    punchline: "It did not want to crash the party.",
+  },
+];
 
 const elements = {
   dog: {
@@ -52,6 +79,20 @@ async function fetchJson(url) {
   return response.json();
 }
 
+async function fetchFromFallbacks(urls) {
+  let lastError = null;
+
+  for (const url of urls) {
+    try {
+      return await fetchJson(url);
+    } catch (error) {
+      lastError = error;
+    }
+  }
+
+  throw lastError || new Error("Request failed");
+}
+
 function setStatus(statusElement, message, isError = false) {
   statusElement.textContent = message;
   statusElement.classList.toggle("error", isError);
@@ -90,6 +131,11 @@ function renderPostsMessage(message) {
 
   infoCard.appendChild(infoText);
   list.appendChild(infoCard);
+}
+
+function getRandomFallbackJoke() {
+  const randomIndex = Math.floor(Math.random() * fallbackJokes.length);
+  return fallbackJokes[randomIndex];
 }
 
 // Converts "australian-shepherd" into "Australian Shepherd".
@@ -161,7 +207,12 @@ async function loadJoke() {
   setStatus(status, "Loading...");
 
   try {
-    const data = await fetchJson(endpoints.joke);
+    const rawData = await fetchFromFallbacks(endpoints.joke);
+    const data = Array.isArray(rawData) ? rawData[0] : rawData;
+
+    if (!data || !data.setup || !data.punchline) {
+      throw new Error("Invalid joke data");
+    }
 
     setup.textContent = data.setup;
     punchline.textContent = data.punchline;
@@ -170,7 +221,12 @@ async function loadJoke() {
     setStatus(status, "");
     nextButton.disabled = false;
   } catch (error) {
-    setStatus(status, "Something went wrong", true);
+    const fallbackJoke = getRandomFallbackJoke();
+
+    setup.textContent = fallbackJoke.setup;
+    punchline.textContent = fallbackJoke.punchline;
+    showPanel(panel, true);
+    setStatus(status, "API unavailable. Showing an offline joke instead.");
   } finally {
     button.disabled = false;
     nextButton.disabled = false;
